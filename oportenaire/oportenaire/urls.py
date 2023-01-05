@@ -21,5 +21,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('docker/',include("docker.urls")),
+    path('dockerSite/',include("dockerSite.urls")),
 ]

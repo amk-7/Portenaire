@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table border="1">
+         <thead>
+                <tr>
+                    <td> DRIVER  </td>
+                    <td> VOLUME NAME </td>
+
+                </tr>
+         </thead>
+        <tbody>
+            {% for volume in volumes %}
+                <tr>
+                    <td>{{ volume.driver }}</td>
+                    <td>{{ volume.name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</body>
+</html>
+

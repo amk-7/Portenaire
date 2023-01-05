@@ -18,10 +18,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for volume in volumes %}
+                {% for container in containers %}
                 <tr>
-                    
-
+                    <td>{{ container.id }}</td>
+                    <td>{{ container.image.labels }}</td>
+                    <td>{{ container.command }}</td>
+                    <td>{{ container.created }}</td>
+                    <td>{{ container.status }}</td>
+                    <td>{{ container.ports }}</td>
+                    <td>{{ container.name }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

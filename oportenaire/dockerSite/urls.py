@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 from django.db import models
-app_name = "docker"
+app_name = "dockerSite"
 
 
 urlpatterns = [
