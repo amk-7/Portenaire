@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
     <table border="1">
          <thead>
                 <tr>
@@ -17,12 +12,10 @@
             {% for volume in volumes %}
                 <tr>
                     <td>{{ volume.driver }}</td>
-                    <td>{{ volume.name }}</td>
+                    <td>{{ volume.attrs.labels }}</td>
                 </tr>
             {% endfor %}
         </tbody>
-
     </table>
-</body>
-</html>
+{% endblock %}
 

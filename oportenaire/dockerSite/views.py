@@ -11,5 +11,5 @@ def showContainers(request):
     return render(request,"docker/containers.html",{"containers":containers})
 
 def showImages(request):
-    images = [1,2,3]
+    images = da.getImages()
     return render(request,"docker/image.html",{"images":images})
