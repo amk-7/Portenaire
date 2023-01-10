@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+    <table border="1">
+        <thead>
+        <tr>
+            <td> REPOSITORY  </td>
+            <td> TAG </td>
+            <td> IMAGE ID </td>
+            <td> CREATED </td>
+            <td> SIZE </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for image in images %}
+            <tr>
+                <td>{{ image.attrs.RepoTags }}</td>
+                <td>{{ image.attrs.Tag }}</td>
+                <td>{{ image.id }}</td>
+                <td>{{ image.attrs.Created }}</td>
+                <td>{{ image.attrs.Size }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+
