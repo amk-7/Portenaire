@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <a href="{% url 'dockerSite:containers' %}">containers</a><br>
+    <a href="{% url 'dockerSite:images' %}">images</a><br>
+    <a href="{% url 'dockerSite:volumes' %}">volumes</a><br>
+    <a href="{% url 'dockerSite:search_image_docker_hub' %}">search image from hub</a><br>
+{% endblock %}
+
+

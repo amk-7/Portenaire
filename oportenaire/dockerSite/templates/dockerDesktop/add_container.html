@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="{% url 'dockerSite:run_image' %}" method="post">
+        {% csrf_token %}
+        <div class="search_image">
+            <div>
+                <label for="cname">Name</label>
+                <input type="text" name="cname" id="cname" placeholder="e.g myContainer">
+            </div>
+            <h4>Image configuration</h4>
+            <div>
+                <div>
+                    <label for="registry">Reistry</label>
+                    <select name="registry" id="registry">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="image">Image</label>
+                    <input type="text" name="image" id="images" placeholder="e.g. my-image:my-tag">
+                    <div>
+                        <a href="https://hub.docker.com/search?q=debian" name="serach_image" id="serach_image">search</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div name="volumes">
+                <div>
+                    <label for="volume">Mapping Volume</label>
+                    <input type="checkbox" name="volume" id="volume">
+                </div>
+                <div>
+                    <input type="text" placeholder="Volume disk"/>
+                    <span></span>
+                    <input type="text" placeholder="Volume container"/>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="create">
+    </form>
+{% endblock %}
