@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th id="select_all">
+                    <input type="checkbox" name="selected_all" id="">
+                </th>
+                <th> Name </th>
+                <th> state </th>
+                <th> image </th>
+                <th> Created </th>
+                <th> IP Adresse </th>
+            </tr>
+        </thead>
+        <tbody>
+            <div> 
+                <form action="{% url 'dockerSite:add_container' %}" method="GET">
+                    <input type="submit" value="+ Add Container">
+                </form>
+            </div>
+            {% for container in containers %}
+            <tr>
+                <th id="select_">
+                    <input type="checkbox" name="selected_" id="">
+                </th>
+                <td>{{ container.name }}</td>
+                <td>{{ container.state.Status }}</td>
+                <td>{{ container.image }}</td>
+                <td>{{ container.created_at  }}</td>
+                <td>{{ container.ip_adresse }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
