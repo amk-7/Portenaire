@@ -20,17 +20,52 @@ def getContainers():
     return _containers
 
 def getImages():
-    return client.images.list()
+    result = None
+    try:
+        result = client.images.list()
+    except Exception as e:
+        raise e
+    return result == None
 
 def pullImage(name: str):
-    result = client.images.pull(name)
-    return
+    result = None
+    try:
+        result = client.images.pull(name)
+    except Exception as e:
+        raise e
+    return result == None
         
 def pushImage(image_id):
-	pass
+    result = None
+    try:
+        result = client.containers.run(image=context['image'], command=context['commande'][0], detach=context['detach'])
+    except Exception as e:
+        raise e
+    return result == None
+
+def removeOneImage(image_id: str) -> bool:
+    result = None
+    try:
+        image = findImageById(image_id)
+        if image:
+            result = image.remove()
+    except Exception as e:
+        raise e
+    return result == None
+
+def removeAllImage(image_id: str) -> bool:
+    result = None
+    try:
+        image = findImageById(image_id)
+        for i in image:
+            result = i.remove()
+    except Exception as e:
+        raise e
+    return result == None
+
 
 def findImageByNameAndTagg(image_name, tag_name):
-	pass
+    pass
 	
 
 
@@ -88,6 +123,17 @@ def findContainerIdByName(containe_alpha):
         raise e
     return result
 
+def findImageById(image_id):
+    result = None
+    try:
+        images = client.images.list(all=True)
+        for image in images:
+            if formatID(image.id) == image_id:
+                result = image
+    except Exception as e:
+        raise e
+    return result
+
 def formatID(id: str) -> str:
     return id[:12]
 
@@ -112,3 +158,4 @@ def searchImage(value):
 #runImage({"image": "alpine", "commande":["echo 'hello world'"], "detach" : False})
 #removeContainer("729d418b3b29")
 startContainair("4ea683d1e24f")
+#removeOneImage("4ea683d1e24f")
