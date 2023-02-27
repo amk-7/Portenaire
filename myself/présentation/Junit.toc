@@ -1,0 +1,5 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{Concept g\IeC {\'e}n\IeC {\'e}ral}{3}{0}{1}
+\beamer@sectionintoc {2}{TDD}{11}{0}{2}
+\beamer@sectionintoc {3}{Annotations Junit}{15}{0}{3}
+\beamer@sectionintoc {4}{Couverture des tests}{19}{0}{4}
