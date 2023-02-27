@@ -10,45 +10,10 @@
 \title{DOCUMENTATION DOCKER \textbf{Docker}}
 \begin{document}
 \maketitle
-\section{Plan de cours}
 
-\begin{tabular}{|c|p{12cm}|}
-\hline 
-Séance & chapitre \\ 
-\hline 
-1 & \begin{itemize}
-\item[•] Généralité.
-\item[•] Installer docker.
-\item[•] Lancer notre première container.
-\end{itemize} \\ 
-\hline 
-2 & \begin{itemize}
-\item[•] Dockerfile : Créer une image.
-\item[•] Fonctionnement du cache.
-\end{itemize} \\ 
-\hline 
-3 & \begin{itemize}
-\item[•] Comprendre les Layers / Couches.
-\item[•] Les Réseaux.
-\item[•] Docker Compose.
-\item[•] ENTRYPOINT VS CMD.
-\end{itemize} \\ 
-\hline 
-4 & \begin{itemize}
-\item[•] Sécuriser le user namespace.
-\item[•] Dokerfile multi-stage.
-\item[•] Les images: TAGS, PULL ET PUSH.
-\item[•] L'API Docker.
-\end{itemize} \\ 
-\hline 
-5 & \begin{itemize}
-\item[•] Développent des modules pour \textbf{PORTE-IFNTI}.
-\end{itemize} \\ 
-\hline 
-\end{tabular} 
 
 \section{Généralités}
-Dans cette première partie, nous allons découvrir les \textbf{conteneurs} ainsi qu'avec 
+Dans cette première partie, nous allons découvrir les \textbf{conteneurs} ainsi que 
 Docker. Mais avant cela, nous allons revenir sur quelque notions importantes :
 \begin{itemize}
 \item[•] comprendre la notion de \textbf{machine virtuelle};
@@ -57,7 +22,7 @@ Docker. Mais avant cela, nous allons revenir sur quelque notions importantes :
 \end{itemize} 
 \subsection{Machine virtuelle (VM)}
 Utiliser une machine virtuelle c'est faire de la \textbf{virtualisation lourde}. Pourquoi car
-nous recréons un système complet (avec ses propres ressource) dans notre système.
+nous recréons un système complet (avec ses propres ressources) dans notre système.
 
 \textbf{L'isolation avec le système hôte est donc totale}; cependant cela nous apporte 
 plusieurs contraintes et avantages.
@@ -75,7 +40,7 @@ hôte.
 \item[•] Vous pouvez installer \textbf{différents OS} (Linux, Windows, etc.).
 \end{itemize}
 
-\begin{figure}[!t]
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{img/vm.png}
 \caption{Fonctionnement d'une machine virtuelle}
@@ -99,19 +64,19 @@ Les conteneurs, au sens d'OpenVZ et LXC, apportent une \textbf{isolation importa
 partagées avec l'ensemble du système. Les conteneurs partagent entre eux le kernel Linux;
 ainsi, il n'est pas possible de faire fonctionner un système Windows ou BSD dans celui-ci.
 
-\begin{figure}[!t]
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{img/container_vs_vm.png}
 \caption{Fonctionnement d'une machine virtuelle}
 \label{Tux}
 \end{figure}
 
-Maintenant voyons quelque exemple des conteneurs.
+Maintenant voyons quelque avantages des conteneurs.
 \begin{itemize}
 \item \textbf{Ne réservez que les ressources nécessaires}
 Une autre différence importante avec les machines virtuelles est qu'un conteneur \textbf{ne réserve pas} la quantité de CPU, RAM et disque attribuée auprès du système hôte. Ainsi, nous pouvons allouer 16 Go de RAM à notre conteneur, mais si celui-ci n'utilise que 2 Go, le reste ne sera pas verrouillé.
 \item \textbf{ Démarrez rapidement vos conteneurs}
-Les conteneurs n'ayant pas besoin d'une virtualisation des ressources mais seulement d'une isolation, ils peuvent \textbf{démarrer beaucoup plus rapidement} et plus fréquemment qu'une machine virtuelle sur nos serveurs hôtes, et ainsi réduire encore un peu les frais de l'infrastructure.
+Les conteneurs n'ayant pas besoin d'une virtualisation des ressources mais seulement d'une isolation des processus, ils peuvent \textbf{démarrer beaucoup plus rapidement} et plus fréquemment qu'une machine virtuelle sur nos serveurs hôtes, et ainsi réduire encore un peu les frais de l'infrastructure.
 \item \textbf{Donnez plus d'autonomie à vos développeurs}
 En dehors de la question pécuniaire, il y a aussi la possibilité de faire tourner des conteneurs sur le poste des développeurs, et ainsi de réduire les différences entre la "sainte" production, et l'environnement local sur le poste des développeurs.
 \end{itemize}
@@ -124,19 +89,51 @@ production pour ajouter des ressources disponibles, et ainsi répondre à des be
 à l'échelle ou de scalabilité. Mais ils répondent aussi à des besoins de préproduction;
 en étant légers et rapides au démarrage, il permettent de créer des environnements dynamique et ainsi de répondre à des besoins métier.
 
-\section{Docker}
-\subsection{Une petite histoire}
+\subsection{Exemple d'équation entre Administrateur système et Développeurs}
+L'une des équation possible entre administrateur système (admin) et développeurs (dev)
+pourrait être la suivante :
+\begin{verbatim}
+Administrateur système = Garant de la stabilité de la sécurité des systèmes informatiques
+Développeurs = Créateurs de nouvelles fonctionnalité et applications
+\end{verbatim}
+\begin{itemize}
+\item[•] \textbf{Administrateur système} est responsable de maintenir la stabilité et la
+sécurité des systèmes informatique en s'assurant que tous les logiciels et configurations 
+fonctionnent correctement et que les données soit protégées contre les menaces de sécurité.
+\item[•] Les \textbf{Développeurs}, quant à eux, sont responsable de créer de nouvelles 
+fonctionnalités et applications pour répondre aux besoins de l'entreprise et des 
+utilisateur.
+\end{itemize}
+
+Ces deux rôles sont complémentaires et interdépendants. Les développeurs ont besoin d'un environnement de développement stable et sécurisé pour travailler efficacement, tandis que l'administrateur système a besoin de comprendre les besoins des développeurs pour configurer les systèmes en conséquence. Ensemble, ils travaillent pour assurer le bon fonctionnement des systèmes informatiques de l'entreprise.
+
+\subsection{Docker préambule}
+Docker est une plateforme de conteneurisation qui permet d'emballer et d'exécuter des applications dans des conteneurs isolés.
+\subsubsection{Une petite histoire}
 Docker a été créé pour les besoins d'une société de Platform as a Service (PaaS) appelée \textbf{DotCloud}. Finalement, en mars 2013, l'entreprise a créé une nouvelle structure nommée \textbf{Docker Inc} et a placé en open source son produit \textbf{Docker}.
 
-\subsection{Objectifs}
+\subsubsection{Objectifs}
 Docker apporte une notion importante dans le monde du conteneur. Dans la vision Docker, un conteneur ne doit faire tourner qu'\textbf{un seul processus}. Ainsi, dans le cas d'une stack LAMP (Linux, Apache, MySQL, PHP), nous devons créer \textbf{3 conteneurs} différents, un pour Apache, un pour MySQL et un dernier pour PHP. Alors que dans un conteneur LXC ou OpenVZ, nous aurions fait tourner l'ensemble des 3 services dans un seul et unique conteneur.
 
-\subsection{Pourquoi utiliser Docker ?}
+\subsubsection{Pourquoi utiliser Docker ?}
 Docker répond à une problématique forte dans le monde du développement.
 Prenons un exemple : vous avez développé votre projet de Twitter Lite en local. Tout fonctionne bien, mais au moment de mettre en production, vous vous rendez compte que vous ne savez pas comment \textbf{déployer votre projet}. Un autre exemple : vous êtes dans une équipe de 10 personnes et chacun utilise un OS différent (Ubuntu, macOS, Windows, CentOS, etc.). Comment faire pour avoir \textbf{un environnement unifié et fonctionnel} chez l'ensemble des développeurs ?
 
 Docker répond à ces problématiques en créant des conteneurs. Grâce à Docker, vous n'aurez plus de problème de différence d'environnement, et votre code marchera partout !
 
+\subsection{Comprendre la terminologie de Docker avant de se lancer !}
+Avant de se lancer dans l'utilisation de Docker, il est important de comprendre la terminologie suivante :
+\begin{itemize}
+\item[•] Image : une image Docker est un paquet de base qui contient tout le nécessaire pour exécuter une application, y compris le code source, les dépendances, les bibliothèques et les fichiers de configuration.
+\item[•] Conteneur : un conteneur Docker est une instance d'une image qui s'exécute de manière isolée dans un environnement de conteneur. Un conteneur peut être considéré comme une boîte virtuelle qui contient tout ce dont l'application a besoin pour s'exécuter.
+\item[•] Dockerfile : un Dockerfile est un fichier de configuration qui permet de créer une image Docker personnalisée. Il contient les instructions nécessaires pour créer une image Docker à partir d'une base existante.
+\item[•] Docker Compose : Docker Compose est un outil qui permet de définir et de gérer des applications multi-conteneurs. Il permet de définir plusieurs conteneurs et leurs dépendances dans un fichier de configuration unique.
+\item[•] Registre : un registre Docker est un référentiel centralisé qui permet de stocker et de distribuer des images Docker. Docker Hub est le registre public officiel de Docker.
+\end{itemize}
+
+En comprenant ces termes de base, vous serez mieux préparé pour travailler avec Docker et comprendre comment créer, déployer et gérer des conteneurs Docker
+    
+\section{Docker}
 \subsection{Installer Docker}
 Docker Inc distribue 3 versions de Docker différentes :
 \begin{itemize}
@@ -155,11 +152,16 @@ La version Docker Enterprise ne ressemble pas du tout aux versions Desktop et CE
 \textbf{NB:} Pour installer docker sur Mac ou Windows rendez vous ici.
 Dans le cas de Linux, vous devez utiliser les commandes suivante.
 \begin{verbatim}
-sudo aptget install docker.io
+sudo apt-get install docker.io
+install docker-ce == moteur
+docker-ce-cli == pour communiquer avec le moteur
+containerd.io == gérer l'exécution de conteneurs.
+docker-buildx-plugin == pour builder nos images
+ docker-compose-plugin
 \end{verbatim}
 
 Après ou avant l'installation de docker il est conseiller de créer votre compte au
-niveau 
+niveau du docker hub
 
 \section{Lancer notre premier conteneur}
 Dans cette partie, je vous propose de \textbf{prendre en main Docker}. Nous allons 
@@ -203,14 +205,14 @@ Dans cette commande, nous avons utilisé deux options :
 \item -p pour définir l'utilisation de ports. Dans notre cas, nous lui avons demandé de transférer le trafic du port 8080 vers le port 80 du conteneur.
 \end{itemize}
     Ainsi, en vous rendant sur l'adresse  http://127.0.0.1:8080, vous aurez la page par défaut de Nginx.\\
-Vous pourriez aussi avoir besoin de "rentrer" dans votre conteneur Docker pour pouvoir y effectuer des actions. Pour cela, vous devez utiliser la commande 
+Vous pourriez aussi avoir besoin de "rentrer" dans votre conteneur Docker pour pouvoir y effectuer des actions. Pour cela, vous devez utiliser la commande \\
 \textbf{docker exec -ti ID\_RETOURNÉ\_LORS\_DU\_DOCKER\_RUN bash}  . Dans cette commande, l'argument \textit{-ti} permet d'avoir un shell bash pleinement opérationnel. Une fois que vous êtes dans votre conteneur, vous pouvez vous rendre, via la commande \textbf{cd /usr/share/nginx/html}  , dans le répertoire où se trouve le fichier index.html  , pour modifier son contenu et voir le résultat en direct à l'adresse http://127.0.0.1:8080.
 
 \subsection{Récupérez une image depuis le docker Hub}
 Vous pouvez aussi avoir besoin de récupérer des images sur le Docker Hub sans pour autant lancer de conteneur. Pour cela, vous avez besoin de lancer la commande suivante :
 
 \begin{verbatim}
- docker pull hello-world
+docker pull hello-world
 
 Using default tag: latest
 
@@ -225,7 +227,7 @@ En lançant cette commande, vous téléchargez une image directement depuis le D
 
 \textbf{NB : } Généralement le pull d'une image peut prendre, beaucoup de seconde voir minute.
 
-\subsection{Quelles que commandes}
+\subsection{Quelques commandes}
 \begin{itemize}
 \item[•] \textbf{docker images} ou \textbf{docker image ls} : Affiche la liste de toute les
 images.
@@ -240,8 +242,8 @@ REPOSITORY                  TAG       IMAGE ID       CREATED       SIZE
 \item \textbf{REPOSITORY} désigne souvent le nom de l'image.
 \item \textbf{TAG} sa version.
 \item \textbf{IMAGE ID} son identifiant (unique).
-\item \textbf{CREATED} l'heur à la quelle elle à été créer et enfin
-\item \textbf{SIZE} L'espace mémoire quelle occupe.
+\item \textbf{CREATED} l'heur à la quelle elle à été créer 
+\item \textbf{SIZE} L'espace mémoire qu'elle occupe.
 \end{itemize}
 \item[•] \textbf{docker ps} ou \textbf{docker container ls} : Affiche la liste de tous les
 conteneurs dans l'état \textbf{RUNING}. pour afficher tous les conteneurs vous allez 
@@ -258,7 +260,7 @@ des détails plus détaillé sur le conteneur.
 \end{itemize}
 
 \subsection{Comment nettoyer son système docker}
-Après avoir fait de nombreux tests sur votre ordinateur, vous pouvez avoir besoin de faire un peu de ménage. Pour cela, vous pouvez supprimer l'ensemble des ressources manuelles dans Docker.\\
+Après avoir fait de nombreux tests sur votre ordinateur, vous pouvez avoir besoin de faire un peu de ménage. Pour cela, vous pouvez supprimer manuellement l'ensemble des ressources dans Docker.\\
 Ou vous pouvez laisser faire Docker pour qu'il fasse lui-même le ménage. Voici la commande que vous devez utiliser pour faire le ménage :  \textbf{docker system prune}.\\
 \begin{verbatim}
  docker system prune
@@ -296,7 +298,7 @@ par Docker permettant de sauvegardé des données générées lors de
 l'exécution d'un conteneur}. Il permet également de monter les données dont le conteneur a besoin à l'intérieur de ce dernier lors
 de son lancement.\\
 Mais avant de voir \textbf{Docker volume} nous allons voir les
-volume persistant.
+volumes persistant.
 
 \subsection{Les volumes persistant}
 Vous vous souvenez du serveur nginx que nous avions créer ? si 
@@ -309,9 +311,9 @@ Une fois créer entrer dans le conteneur en utilisant la commande suivante :
 \begin{verbatim}
 docker exec -it serveur
 \end{verbatim}
-Rendez-vous ensuite dans le fichier index.html et modifier le à votre guise. Mais souvenez vous il n'y pas de vim ou de nano par
+Rendez-vous ensuite dans le fichier index.html et modifier le à votre guise. Mais souvenez vous il n'y a aucun éditeur installé par défaut.
 \begin{center}
-\includegraphics[scale=0.3]{img/volume_persistant_1.png}
+\includegraphics[scale=0.5]{img/volume_persistant_1.png}
 \end{center}
 Voici le résultat.
 \begin{center}
@@ -323,7 +325,7 @@ docker rm -f serveur
 docker run -d --name serveur -p 8080:80 nginx
 \end{verbatim}
 Que se passe t-il ?
-Vos modification n'ont pas été pris en compte et vous voyez la
+Vos modifications n'ont pas été pris en compte et vous voyez la
 page par défaut de nginx ! 
 Pour régler ce problème nous allons utiliser un volume. créer un 
 répertoire nommé \textbf{public\_html}. Créez s'y le fichier
@@ -335,7 +337,9 @@ faire le mappage de répertoire en disant que le répertoire
 créer nous même le fichier \textbf{index.html}. Créez maintenant
 notre conteneur.
 \begin{verbatim}
-docker run -d --name serveur -p 8001:80 -v /home/amk/IFNTI/DAP/DAP_L3/UELIBRE/Test/test/public_html/:/usr/share/nginx/html/ nginx 
+docker run -d --name serveur -p 8001:80 
+-v /home/amk/IFNTI/DAP/DAP_L3/UELIBRE/
+Test/test/public_html/:/usr/share/nginx/html/ nginx 
 \end{verbatim}
 \begin{center}
 \includegraphics[scale=0.3]{img/volume_mount.png}
@@ -400,7 +404,8 @@ amk@amk:~/IFNTI/DAP/DAP_L3/UELIBRE/Test/test$
 Maintenant nous allons utiliser notre volume sur un conteneur en
 utilisant l'option \textbf{--mount}
 \begin{verbatim}
-docker run -d --name web -p 8001:80 --mount source=monvolume,target=/usr/share/nginx/html nginx
+docker run -d --name web -p 8001:80 --mount 
+source=monvolume,target=/usr/share/nginx/html nginx
 \end{verbatim}
 Voici le résultat:
 \begin{center}
@@ -424,7 +429,7 @@ Pour cela, nous allons créer un fichier nommé \textbf{"Dockerfile"} (fichier d
 Intérêts de \textbf{Dockerfile}.
 \textit{À titre de comparaison, vous pouvez voir le Dockerfile comme l'équivalent d'un fichier package.json en Node.js, ou composer.json en PHP. } \\
 Chaque instruction que nous allons donner dans notre Dockerfile va créer une nouvelle layer correspondant à chaque étape de la construction de l'image.
-Notre est de limiter le nombre e layers, pour que image soit la plus légère et performante possible.
+Notre but est de limiter le nombre e layers, pour que l'image soit la plus légère et performante possible.
 
 Voici quelles que closes d'un \textbf{Dockerfile}:
 \begin{itemize}
@@ -446,12 +451,12 @@ RUN rm index.html
 COPY . .
 \end{verbatim}
 
-Dans cette image on :
+Dans cette image :
 \begin{itemize}
-\item part de la dernière version du serveur nginx,
-\item définit le répertoire de travail,
-\item supprime le fichier index.html
-\item copie de notre fichier index.html.
+\item on part de la dernière version du serveur nginx,
+\item on définit le répertoire de travail,
+\item on supprime le fichier index.html
+\item on copie notre fichier index.html.
 \end{itemize} 
 
 \textbf{NB}: \\
@@ -460,23 +465,23 @@ Il est très important de toujours \textbf{partir d'une base} (FROM ...).
 un fichier Dockerfile ne peut qu'avoir qu'une base.
 
 Maintenant que vous savez pourquoi et comment créer un dockerfile il nous reste plus
-qu'a l'exécuté. Pour lancer une image on utilise la commende suivante.
+qu'a l'exécuté. Pour lancer une image on utilise la commande suivante.
 
 \textbf{docker build -t site\_html:v1.0 .}
 
 Cette commande signifie que nous souhaitons créer une image dont le nom vaut \textit{site\_html}
 et la version \textit{v1.0} en se servant du Dockerfile se trouvant dans notre répertoire 
-courant (si vous ne spécifiez pas de version elle sera à latest pour dernière version).
+courant (si vous ne spécifiez pas de version elle sera à \textbf{latest} pour dernière version).
 si vous faite \textit{docker images} vous pouvez comme moi voir votre image .\\
 ::::::img\\
-On peut aussi faire \textit{docker history site\_html:v1.0} pour voir en détails les étapes de 
+On peut aussi faire \textbf{docker history site\_html:v1.0} pour voir en détails les étapes de 
 la création de notre image.\\
 
 On peut donc créer un conteneur à partir de notre image en utilisant la commande suivante:
-\textbf{docker run -tid --name website site\_html:v1.0}
+\textbf{docker run -d - -name website site\_html:v1.0}
 
 \section{Les Layers}
-Les layers ou couches en français intervienne dans la création d'une image et d'un conteneur. Avec docker on peut distinguer deux types de couches :
+Les layers ou couches en français interviennent dans la création d'une image et d'un conteneur. Avec docker on peut distinguer deux types de couches :
 \begin{itemize}
 \item ceux en lecture seul (images).
 \item et ceux en lecture-écriture (conteneurs).
@@ -491,7 +496,7 @@ But du cache :
 \item construire plus vite les images
 \item démarrer plus vite les conteneurs
 \item stocker des images légères
-\item partage de couche/cache
+\item partager des couches/layers
 \end{itemize}
 Démonstration : \\
 \subsubsection{Lancer deux fois de suite une image (using cache)}
@@ -510,18 +515,18 @@ docker build -t test_vim .
 \end{verbatim}
 On peut remarqué qu'il n'a pas utilisation du cache.
 \begin{center}
-\includegraphics[scale=0.3]{img/test_vim.png}
+\includegraphics[scale=0.5]{img/test_vim.png}
 \end{center}
 Par contre si on relance une deuxième fois l'image là il y-a utilisation du cache.
 \begin{center}
-\includegraphics[scale=0.3]{img/test_vim_cache.png}
+\includegraphics[scale=0.5]{img/test_vim_cache.png}
 \end{center}
 L'utilisation du cache se fait même si on change le nom de l'image comme ceci :
 \begin{verbatim}
 docker build -t test_vim2
 \end{verbatim}
 \begin{center}
-\includegraphics[scale=0.3]{img/test_vim3.png}
+\includegraphics[scale=0.5]{img/test_vim3.png}
 \end{center}
 \textbf{Conclusion } : Une couche n'est télécharger que si elle n'existe pas.
 \subsubsection{Ne pas cacher (--no-cache)}
@@ -535,7 +540,7 @@ LABEL maintener="amk"
 RUN apk add --no-cache vim
 \end{verbatim}
 \begin{center}
-\includegraphics[scale=0.3]{img/test_vim_no_cache.png}
+\includegraphics[scale=0.5]{img/test_vim_no_cache.png}
 \end{center}
 Donc on peut remarquer l'utilisation du cache au niveau de toute les couches sauf à la 
 couche 3 c'est normale car nous n'avons spécifier l'utilisation du cache.
@@ -545,11 +550,12 @@ docker build --no-cache -t test_vim2
 \end{verbatim}
 Mais là c'est l'intégralité du Dockerfile sur le quelle on n'appliquera pas de cache.
 
-\textbf{NB } : l'ordre des éléments comptes. Il est important de mettre des instruction
+\textbf{NB } : l'ordre des éléments comptes. Il est important de mettre des instructions
 caché en haut et ceux non caché tous en bas.
 Exemple : Lancer successivement les Dockerfile suivant.\\
-Dockerfile 1
+\textbf{Dockerfile 1}
 \begin{verbatim}
+--------------------------
 FROM alpine:latest
 
 LABEL maintener="amk"
@@ -557,6 +563,7 @@ LABEL maintener="amk"
 ENV myvariable toto
 
 RUN apk add  vim
+--------------------------
 \end{verbatim} 
 \begin{verbatim}
 docker build -t test
@@ -564,8 +571,9 @@ docker build -t test
 \begin{verbatim}
 docker build -t test1
 \end{verbatim}
-Dockerfile 2
+\textbf{Dockerfile 2}
 \begin{verbatim}
+--------------------------
 FROM alpine:latest
 
 LABEL maintener="amk"
@@ -573,12 +581,14 @@ LABEL maintener="amk"
 ENV myvariable titi
 
 RUN apk add  vim
+--------------------------
 \end{verbatim} 
 \begin{verbatim}
 docker build -t test
 \end{verbatim}
-Dockerfile 3
+\textbf{Dockerfile 3}
 \begin{verbatim}
+--------------------------
 FROM alpine:latest
 
 LABEL maintener="amk"
@@ -586,6 +596,7 @@ LABEL maintener="amk"
 RUN apk add  vim
 
 ENV myvariable toto
+--------------------------
 \end{verbatim} 
 \begin{verbatim}
 docker build -t test
@@ -611,14 +622,14 @@ docker exec -ti conteneur1 sh
 \end{verbatim}
 Une fois dans le conteneur on peut consulter son adresse ip avec la commande \textbf{ip a}.
 \begin{center}
-\includegraphics[scale=0.3]{img/ip_a_c1.png}
+\includegraphics[scale=0.5]{img/ip_a_c1.png}
 \end{center}
 On peut remarqué que notre adresse ip commence à deux (2) au lieu de commencer à un (1).
-Pourquoi ? car c'est le docker 0 qui est la première machine dans le \textbf{bridge}. On
+Pourquoi ? car c'est le docker 0 est la première machine dans le \textbf{bridge}. On
 peut lancer un ping vers ce docker 0 et ça marche car le conteneur est dans le même 
 réseau que le docker 0.
 \begin{center}
-\includegraphics[scale=0.3]{img/ping_c1.png}
+\includegraphics[scale=0.5]{img/ping_c1.png}
 \end{center}
 
 \subsection{Personnalisation du bridge --net}
@@ -710,7 +721,7 @@ docker run -itd --name conteneur2 --link conteneur1 alpine
 Test : ici nous avons créer le conteneur1 en précisant l'option --add-host pour cela 
 demander à un de vos camarade de vous donner son adresse ip ou si vous aviez une deuxième
 machine prenez son adresse ip. Dans mon cas l'adresse ip de mon camarade est le 
-\textit{192.168.60.180}(Il est important que votre host soit aussi dans le sous réseau). 
+\textit{192.168.60.180}(Il est important que votre host soit aussi dans le même sous réseau). 
 \begin{center}
 \includegraphics[scale=0.5]{img/add_host.png}
 \end{center}
@@ -719,7 +730,338 @@ machine prenez son adresse ip. Dans mon cas l'adresse ip de mon camarade est le
 \end{center}
 
 \section{Docker compose}
+Docker compose est un orchestrateur de conteneur. Il permet de gérer plusieurs conteneur à 
+la fois. Ainsi il permet de simplifier nos déploiements sur de multiple environnement.
+Docker compose est un outil écrit en python qui permet de décrire, dans un fichier
+\textbf{YAML}, plusieurs conteneurs comme un ensemble de service.
 
+\subsection{Installation de docker compose.}
+Normalement si vous avez installer docker avec notre ligne de commande, docker compose
+serait déjà installé si ce n'est pas le cas alors exécuter la commande suivante:
+\begin{verbatim}
+sudo curl -L "https://github.com/docker/compose/
+releases/download/1.23.2/docker-compose-
+$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose && 
+sudo chmod +x /usr/bin/docker-compose
+\end{verbatim}
+Puis :\\
+\begin{verbatim}
+docker-compose --version
+\end{verbatim}
+
+\subsection{Le CLI de Docker Compose}
+Pour utiliser \textbf{le CLI (Command Line Interface)} de Docker Compose, nous avons besoin d'un fichier \textbf{docker-compose.yml} 
+que nous allons créer dans l'exemple ci dessous ! Mais avant de le créer, nous allons commencer par découvrir ensemble l'interface 
+en ligne de commande (CLI) qui nous permet d'utiliser le fichier docker-compose.yml.\\
+\textbf{Le CLI de Docker Compose et celui de Docker sont très proches}. Par exemple, si vous souhaitez récupérer l'ensemble des images décrites 
+dans votre fichier docker-compose.yml et les télécharger depuis le Docker Hub, vous devez faire un docker-compose pull. 
+Du côté de Docker, la commande serait un docker pull.\\
+
+\textit{Le fait que les deux interfaces en ligne de commande soient très similaires nous évite d'apprendre un nouveau CLI. Si vous connaissez celui de Docker, vous savez globalement utiliser celui de Docker Compose !}\\
+
+Cependant, nous allons quand même voir ensemble les principales commandes que vous pourriez avoir besoin d'utiliser et de connaître pour votre utilisation de Docker Compose.
+
+\subsection{Démarrer une stack Docker Compose}
+Si vous souhaitez lancer la création de l'ensemble des conteneurs, vous devez lancer la commande \textbf{docker-compose up} (pour rappel, vous faites un \textbf{docker run} pour lancer un seul conteneur). Vous pouvez ajouter l’argument \textbf{-d} pour faire tourner les conteneurs en tâche de fond.\\
+
+Nous appelons \textbf{stack} un ensemble de conteneurs Docker lancés via un seul et unique fichier Docker Compose.\\
+
+\subsection{Voir le statut d'une stack Docker Compose}
+Après avoir démarré une \textbf{stack} Docker Compose, vous aurez certainement besoin de voir si l'ensemble des conteneurs sont bien dans un état fonctionnel, et prêts à rendre un service.\\
+Pour cela, vous allez utiliser la commande \textbf{docker-compose ps} qui vous affichera le retour suivant :
+
+\begin{verbatim}
+NAME                COMMAND                  SERVICE             STATUS              PORTS
+ou
+no configuration file provided: not found  
+\end{verbatim}
+
+\subsection{Voir les logs d'une stack Docker Compose}
+Votre stack Docker Compose est maintenant fonctionnelle, et l'ensemble des services répondent bien ; mais vous pourriez avoir besoin de voir les logs de vos conteneurs. Pour cela, vous devez utiliser la commande \textbf{docker-compose logs -f --tail 5}.\\
+
+Celle-ci permet de voir l'ensemble des logs sur les différents conteneurs de façon continue, tout en limitant l'affichage aux 5 premières lignes.\\
+
+Ainsi, si nos conteneurs fonctionnent depuis longtemps, nous n'aurons pas à attendre plusieurs secondes, ni à voir de nombreux logs qui ne nous intéressent pas.\\
+
+\subsection{Arrêter une stack Docker Compose}
+Si vous souhaitez arrêter une stack Docker Compose, vous devez utiliser la commande \textbf{docker-compose stop}. Cependant, celle-ci ne supprimera pas les différentes ressources créées par votre stack.\\
+Ainsi, si vous lancez à nouveau un \textbf{docker-compose up -d}, l'ensemble de votre stack sera tout de suite à nouveau fonctionnel.\\
+
+Si vous souhaitez supprimer l'ensemble de la stack Docker Compose, vous devez utiliser la commande \textbf{docker-compose down} qui détruira l'ensemble des ressources créées.\\
+
+\subsection{Valider une stack Docker Compose}
+Lors de l'écriture d'un fichier docker-compose, nous ne sommes pas à l’abri d'une erreur. Pour éviter au maximum cela, vous devez utiliser la commande \textbf{docker-compose config} qui vous permettra de valider la syntaxe de votre fichier, et ainsi d'être certain de son bon fonctionnement.\\
+
+Si nous créons une erreur dans notre stack, en remplaçant "image" par "images", par exemple, nous aurons le résultat suivant :
+
+\begin{verbatim}
+$ docker-compose config
+
+ERROR: The Compose file './docker-compose.yml' is invalid because:
+
+Unsupported config option for services.db: 'images'
+\end{verbatim}
+
+\subsection{En résumé}
+Vous connaissez maintenant les commandes principales pour utiliser une \textbf{stack Docker Compose}. Voici les commandes les plus importantes :
+\begin{itemize}
+\item \textbf{docker-compose up -d} vous permettra de démarrer l'ensemble des conteneurs en arrière-plan ;
+\item \textbf{docker-compose ps} vous permettra de voir le statut de l'ensemble de votre stack ;
+\item \textbf{docker-compose logs -f --tail 5} vous permettra d'afficher les logs de votre stack ;
+\item \textbf{docker-compose stop} vous permettra d'arrêter l'ensemble des services d'une stack ;
+\item \textbf{docker-compose down} vous permettra de détruire l'ensemble des ressources d'une stack ;
+\item \textbf{docker-compose config} vous permettra de valider la syntaxe de votre fichier docker-compose.yml.
+\end{itemize}
+
+\section{Créez un fichier docker-compose pour orchestrer vos conteneurs}
+Nous avons vu précédent comment utiliser l'interface en ligne de commande de Docker Compose; vous allez maintenant apprendre à créer un fichier docker-compose.yml. \\
+\textbf{Sujet :} \\
+Vous avez un nouveau projet de site avec WordPress, et vous souhaitez simplifier la gestion de l'infrastructure. Vous devez maintenant réaliser un déploiement en production, où l'ensemble des composants sont dans des conteneurs Docker. Pour cela, vous allez avoir besoin de plusieurs composants :
+\begin{itemize}
+\item une base de données MySQL ;
+\item le système de fichiers WordPress.
+\end{itemize}
+Voici le diagramme de déploiement correspondant.\\
+:::::Image::::::\\
+
+Vous devez commencer par créer un fichier \textbf{docker-compose.yml} à la racine de votre projet. Dans celui-ci, nous allons décrire l'ensemble des ressources et services nécessaires à la réalisation de votre POC (Proof Of Concept).\\
+\subsection{Décrivez votre premier service : db}
+\subsubsection{Définissez la version de Docker Compose}
+Un fichier docker-compose.yml commence toujours par les informations suivantes :
+\begin{verbatim}
+version: '3'
+\end{verbatim}
+L'argument version permet de spécifier à Docker Compose quelle version on souhaite utiliser, et donc d'utiliser ou pas certaines versions. Dans notre cas, nous utiliserons la version 3, qui est actuellement la version la plus utilisée.\\
+
+\subsubsection{Déclarez le premier service et son image}
+Nous allons maintenant déclarer notre premier service, et donc créer notre \textbf{stack WordPress} !\\
+L'ensemble des conteneurs qui doivent être créés doivent être définis sous l'argument \textbf{services}. Chaque conteneur commence avec un nom qui lui est propre ; dans notre cas, notre premier conteneur se nommera \textbf{db}.
+
+\begin{verbatim}
+services:
+
+  db:
+
+    image: mysql:5.7
+\end{verbatim}
+
+Puis, vous devez \textbf{décrire votre conteneur}; dans notre cas, nous utilisons l’argument \textbf{image} qui nous permet de définir l'image Docker que nous souhaitons utiliser.\\
+
+Nous aurions pu aussi utiliser l’argument \textbf{build} en lui spécifiant le chemin vers notre fichier \textbf{Dockerfile} ; ainsi, lors de l’exécution de Docker Compose, il aurait construit le conteneur via le Dockerfile avant de l’exécuter.
+
+\subsubsection{Définissez le volume pour faire persister vos données}
+\begin{verbatim}
+services:
+
+  db:
+
+    image: mysql:5.7
+
+    volumes:
+
+      - db_data:/var/lib/mysql
+\end{verbatim}
+
+Pour rappel, nous avons vu précédemment que les conteneurs Docker ne sont pas faits pour faire fonctionner des services \textbf{stateful}, et une base de données est par définition un service \textbf{stateful}. Alors vous allez utiliser l'argument volumes qui vous permet de stocker l'ensemble du contenu du dossier /var/lib/mysql dans un disque persistant. Et donc, de pouvoir garder les données en local sur notre host comme nous l'avons vue dans
+la section VOLUME.
+
+Cette description est présente grâce à la ligne \textbf{db\_data:/var/lib/mysql}. db\_data est un volume créé par Docker directement, qui permet d'écrire les données sur le disque hôte sans spécifier l'emplacement exact. Vous auriez pu aussi faire un /data/mysql:/var/lib/mysql qui serait aussi fonctionnel.
+\subsubsection{Définissez la politique de redémarrage du conteneur}
+\begin{verbatim}
+services:
+
+  db:
+
+    image: mysql:5.7
+
+    volumes:
+
+      - db_data:/var/lib/mysql
+
+    restart: always
+\end{verbatim}
+Un conteneur étant par définition \textbf{monoprocessus}, s'il rencontre une erreur fatale, il peut être amené à s'arrêter. Dans notre cas, si le serveur MySQL s'arrête, celui-ci redémarrera automatiquement grâce à l'argument \textbf{restart: always}.
+\subsubsection{Définissez les variables d'environnement}
+\begin{verbatim}
+services:
+
+  db:
+
+    image: mysql:5.7
+
+    volumes:
+
+      - db_data:/var/lib/mysql
+
+    restart: always
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: somewordpress
+
+      MYSQL_DATABASE: wordpress
+
+      MYSQL_USER: wordpress
+
+      MYSQL_PASSWORD: wordpress
+\end{verbatim}
+
+L'image MySQL fournie dispose de plusieurs variables d'environnement que vous pouvez utiliser ; dans notre cas, nous allons donner au conteneur les valeurs des différents mots de passe et utilisateurs qui doivent exister sur cette base. Quand vous souhaitez donner des variables d'environnement à un conteneur, vous devez utiliser l'argument \textbf{environment}, comme nous l'avons utilisé dans le fichier docker-compose.yml ci-dessus.
+\subsection{Décrivez votre second service : WordPress}
+Dans le second service, nous créons un conteneur qui contiendra le nécessaire pour faire fonctionner votre site avec WordPress. Cela nous permet d'introduire deux arguments supplémentaires.
+
+\begin{verbatim}
+services:
+
+  wordpress:
+
+    depends_on:
+
+      - db
+
+    image: wordpress:latest
+
+    ports:
+
+      - "8000:80"
+
+    restart: always
+
+    environment:
+
+      WORDPRESS_DB_HOST: db:3306
+
+      WORDPRESS_DB_USER: wordpress
+
+      WORDPRESS_DB_PASSWORD: wordpress
+
+      WORDPRESS_DB_NAME: wordpress
+\end{verbatim}
+
+Le premier argument, \textbf{depends\_on}, nous permet de créer une dépendance entre deux conteneurs. Ainsi, Docker démarrera le service db avant de démarrer le service WordPress. Ce qui est un comportement souhaitable, car WordPress dépend de la base de données pour fonctionner correctement.
+
+Le second argument, \textbf{ports}, permet de dire à Docker Compose qu'on veut exposer un port de notre machine hôte vers notre conteneur, et ainsi le rendre accessible depuis l'extérieur.
+
+Voici le fichier \textbf{docker-compose.yml} dans sa version finale :
+
+\begin{verbatim}
+version: '3'
+
+services:
+
+  db:
+
+    image: mysql:5.7
+
+    volumes:
+
+      - db_data:/var/lib/mysql
+
+    restart: always
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: somewordpress
+
+      MYSQL_DATABASE: wordpress
+
+      MYSQL_USER: wordpress
+
+      MYSQL_PASSWORD: wordpress
+
+    
+
+  wordpress:
+
+    depends_on:
+
+      - db
+
+    image: wordpress:latest
+
+    ports:
+
+      - "8000:80"
+
+    restart: always
+
+    environment:
+
+      WORDPRESS_DB_HOST: db:3306
+
+      WORDPRESS_DB_USER: wordpress
+
+      WORDPRESS_DB_PASSWORD: wordpress
+
+      WORDPRESS_DB_NAME: wordpress
+
+
+volumes:
+
+  db_data: {}
+\end{verbatim}
+
+\subsection{Lancez votre stack Docker Compose}
+
+Quand vous lancerez vos conteneurs avec la commande \textbf{docker-compose up -d}  , vous devriez avoir le résultat suivant :
+
+\begin{verbatim}
+$ docker-compose up -d
+
+Creating network "my_wordpress_default" with the default driver
+
+Pulling db (mysql:5.7)...
+
+5.7: Pulling from library/mysql
+
+efd26ecc9548: Pull complete
+
+a3ed95caeb02: Pull complete
+
+...
+
+Digest: sha256:34a0aca88e85f2efa5edff1cea77cf5d3147ad93545dbec99cfe705b03c520de
+
+Status: Downloaded newer image for mysql:5.7
+
+Pulling wordpress (wordpress:latest)...
+
+latest: Pulling from library/wordpress
+
+efd26ecc9548: Already exists
+
+a3ed95caeb02: Pull complete
+
+589a9d9a7c64: Pull complete
+
+...
+
+Digest: sha256:ed28506ae44d5def89075fd5c01456610cd6c64006addfe5210b8c675881aff6
+
+Status: Downloaded newer image for wordpress:latest
+
+Creating my_wordpress_db_1
+
+Creating my_wordpress_wordpress_1
+\end{verbatim}
+
+Lors de l'exécution de cette commande, Docker Compose commence par vérifier si nous disposons bien en local des images nécessaires au lancement des stacks. Dans le cas contraire, il les télécharge depuis une registry, ou les build via un \textbf{docker build  .}\\
+
+Puis celui-ci lance les deux conteneurs sur votre système ; dans notre cas, vous pourrez voir le résultat en vous ouvrant l'URL suivante dans votre navigateur : \textbf{ http://127.0.0.1:8000.}\\
+::::::IMAGE:::::::
+\subsection{En résumé}
+Vous savez maintenant utiliser les commandes de base de Docker Compose, et créer un fichier docker-compose.yml pour orchestrer vos conteneurs Docker.\\
+
+Pour rappel, voici les arguments que nous avons pu voir dans ce chapitre :
+\begin{itemize}
+\item \textbf{image} qui permet de spécifier l'image source pour le conteneur ;
+\item \textbf{build} qui permet de spécifier le Dockerfile source pour créer l'image du conteneur ;
+\item \textbf{volume} qui permet de spécifier les points de montage entre le système hôte et les conteneurs ;
+\item \textbf{restart} qui permet de définir le comportement du conteneur en cas d'arrêt du processus ;
+\item \textbf{environment} qui permet de définir les variables d’environnement ;
+\item \textbf{depends\_on} qui permet de dire que le conteneur dépend d'un autre conteneur ;
+\item \textbf{ports} qui permet de définir les ports disponibles entre la machine host et le conteneur.
+\end{itemize}
 
 \end{document}
 

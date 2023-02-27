@@ -1,0 +1,17 @@
+\frametitle{Complexifier les cas de tests}
+\begin{exampleblock}{Multiples cas à tester}\scriptsize
+		\begin{lstlisting}
+@DisplayName("Fonction ajouter avec valeurs positives et négatives")
+@ParameterizedTest(name = "{0} + {1} should equal to {2}")
+@CsvSource({ "1,1,-2", "2,-3,-5", "3,-2,-7" })
+public void testAdd(int arg1, int arg2, int expectResult) {
+    // Arrange -- Tout est prêt !
+
+    // Act
+    int actualResult = calculatorUnderTest.add(arg1, arg2);
+
+    // Assert
+    assertEquals(expectResult, actualResult);
+}
+		\end{lstlisting}
+	\end{exampleblock}
