@@ -29,17 +29,23 @@ def getImages():
 
 def pullImage(name: str):
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> main
     result = None
     try:
         result = client.images.pull(name)
     except Exception as e:
         raise e
     return result == None
+<<<<<<< HEAD
 =======
     result = client.images.pull(name)
     return
 
 >>>>>>> f89d73f63d80efc0b6ceaed2eb18fd0f1e505342
+=======
+>>>>>>> main
         
 def pushImage(image_id):
     result = None
