@@ -71,7 +71,7 @@
 \title{Docker}
 \subtitle[DAP]{UE Libre}
 \institute{IFNTI L3}
-\author{Jean-Christophe Carré\thanks{Inspiré de la documentation Junit5 et du cours d'openclassroom sur les tests unitaires}}
+\author{KONDI Abdoul malik \\ ADJANAYO Simone \thanks{Inspiré de la documentation docker et du cours d'openclassroom sur docker}}
 \date{\today}
 
 \setbeamertemplate{footline}
@@ -121,264 +121,80 @@
 
 \section{Concept général}
 
-\begin{frame}{exemple introductif}
-	\begin{minipage}{0.4\textwidth}
-		\includegraphics[height=7cm]{images/Ariane_501_explosion_pillars.jpg}
-	\end{minipage}\hfill
-	\begin{minipage}{0.55\textwidth}
-		Ariane 501 :\\
-		
-		10 ans de R\&D.\\
-		
-		Vol inaugural, devant les caméras du monde entier.\\
-		
-		Tout avait été testé \tiny ou presque...
-	\end{minipage}
-\end{frame}
-
-\begin{frame}{Le cycle en V}
-	\noindent
-	\begin{minipage}{0.45\textwidth}
-		\noindent
-		\includegraphics[width=\textwidth]{images/cycle_en_V.png}
-	\end{minipage}\hfill
-	\begin{minipage}{0.5\textwidth}
-		Modèle d'organisation projet.\\
-		Du CDC à la livraison.\\
-		Détecter les erreurs au plus tôt.
-	\end{minipage}
-	
-	\begin{block}{Test Driven Developpement (TDD)}
-		Lors de la phase descendante du cycle en V, l'écriture des tests précède l'écriture du code.\\
-		Les tests définissent le comportement attendu (ils sont une forme de documentation) et indiquent le travail restant.
-	\end{block}
-
-\end{frame}
-
-\begin{frame}{La pyramide des tests : principe}
-	\includegraphics[width=0.95\textwidth]{images/Pyramide_des_tests2.png}
-\end{frame}
-
-\begin{frame}{La pyramide des tests : exemples}
-	\begin{block}{tests unitaires}
-		\begin{itemize}
-			\item \small \code{lireXML("nom", "<nom>Bob</nom>")} doit renvoyer "Bob".
-			\item \code{lireXML("nom", "<nom>Bob</no>")} doit lever une exception.
-		\end{itemize}
-	\end{block}
-	\begin{block}{tests d'intégration}
-		Mise en commun de différentes parties de code développées par des équipes différentes.
-	\end{block}
-	\begin{block}{tests fonctionnels}
-		\begin{itemize}
-			\item Plus d'espace de stockage sur le serveur
-			\item Coupure d'alimentation de la machine
-			\item Perte du réseau internet/intranet
-		\end{itemize}
-	\end{block}
-\end{frame}
-	
-\begin{frame}{Manuel ou automatique}
-	\begin{block}{Tests manuels}
-		
-		\begin{minipage}{0.44\textwidth}
-			\begin{itemize}
-				\item \textcolor{darkgreen}{Poussés et complexes}
-				\item \textcolor{darkgreen}{Scénarios réalistes}
-				\item \textcolor{darkgreen}{Aucun travail amont}
-			\end{itemize}
-		\end{minipage}\hfill
-		\begin{minipage}{0.55\textwidth}
-			\begin{itemize}
-				\item \textcolor{red}{Fastidieux et répétitif}
-				\item \textcolor{red}{Risque d'erreur humaine (négligence)}
-			\end{itemize}
-		\end{minipage}
-		\vspace{0.2cm}
-		\begin{center}
-			Adaptés à la phase de recette du produit fini.
-		\end{center}
-		
-	\end{block}
-	
-	\begin{block}{Tests automatiques}
-		\begin{minipage}{0.44\textwidth}
-			\begin{itemize}
-				\item \textcolor{darkgreen}{Exécution immédiate}
-				\item \textcolor{darkgreen}{Rigueur absolue}
-			\end{itemize}
-		\end{minipage}\hfill
-		\begin{minipage}{0.55\textwidth}
-			\begin{itemize}
-				\item \textcolor{red}{Uniquement cas simples}
-				\item \textcolor{red}{Nécessite du travail de codage}
-				\item \textcolor{red}{Difficile d'être exhaustif}
-			\end{itemize}
-		\end{minipage}
-		
-		\vspace{0.2cm}
-		\begin{center}
-			Adaptés à la phase de développement itératif.
-		\end{center}
-		
-	\end{block}
-\end{frame}
-
-
-
-\begin{frame}{Bonnes pratiques 1/2}
-	
-	\begin{block}{En phase de conception}
-		Choix de scénarios prédéfinis et représentatifs :
-		\begin{itemize}
-			\item Cas nominal
-			\item Tous les cas d'erreurs (NTUI).\\
-		\end{itemize}
-		Une modification d'une fonction peut impacter tout le reste du code. $\rightarrow$ test automatique de tout le code pour vérifier l'absence d'effets indésirables.
-	\end{block}
-	
-	\begin{block}{En phase de production}
-		Facilite la maintenance (exécution de tous les tests automatiques avant d'uploader une nouvelle version)
-	\end{block}
-\end{frame}
-
-\begin{frame}{Bonnes pratiques 1/2}
-\begin{block}{\textbf{F.I.R.S.T.}}
+\begin{frame}{Qu'est ce que docker ?}
+\begin{center}
+\includegraphics[scale=0.13]{images/docker.png}
+\includegraphics[scale=0.8]{images/dotcloud.png}
+\end{center}
+\begin{block}{Docker}
 \begin{itemize}
-\item \textbf{Fast} (\texttt{<} 5 ms) Pour pouvoir être souvent exécutés.\\
-Utiliser l'annotation @Timeout si besoin.
-\item \textbf{Isolated} Un test ne doit pas utiliser les variables ou bien les résultats d'un autre test.
-\item \textbf{Repeatable} Toujours le même résultat pour un même code. (ne doit pas dépendre de la date, ou de la charge de travail de la machine)
-\item \textbf{Self-validating} Ne nécessite pas de relecture pour connaître l'état validé ou non.
-\item \textbf{Thourough} NTUI ! \tiny{(c.f. couverture des tests)}
+\item[•] Une plateforme de conteneurisation.
+\item[•] Créer en 2013 par la société dotCloud.
 \end{itemize}
 \end{block}
 \end{frame}
 
-\section{TDD}
-\begin{frame}{Modèle red-green-refractor}
-  \begin{center}
-  \includegraphics[width=0.8\textwidth]{images/Red-green-refractor.png}
-  \end{center}
-	
-	\begin{block}{Tout ce qu'il faut et rien que ce qu'il faut}
-		\begin{itemize}
-			\item Coder le test (la fonction ne passe pas le test) $\rightarrow$ Red
-			\item Coder la fonction, jusqu'à ce que le test passe $\rightarrow$ Green
-			\item Nettoyer le code, en enlevant le superflu $\rightarrow$ Refract
-		\end{itemize}
-	\end{block}
-\end{frame}
-
-
-\begin{frame}{Cinématique du test}
-	\includegraphics[width=\textwidth]{images/Cinematique_du_test_avec_exemple.png}
-\end{frame}
-
-
-%TODO Expliquer qu'il faut coder les tests pour qu'ils s'exécutent d'abord sur les fonctions les plus bas niveau, avant de remonter. Les tests des fonctions haut niveau ne peuvent en effet pas passer leur tests si ceux des fonctions de plus bas niveau ne passent pas. Dans la démarche TDD, c'est la même chose : en phase de développement, on commence par les fonctions de plus bas niveau.
-
-
-\begin{frame}[fragile]{Assertions}
-\begin{block}{But}
-	Définissent les conditions de succès ou d'échec d'un test.\\
-	Multiples critères possibles.\\
-	Une Seule Assertion par test.\\
+\begin{frame}{Objectifs}
+\begin{block}{L'objectif de docker}
+est faire tourné qu'un seul processus dans un conteneur.
 \end{block}
-	\begin{block}{Syntaxes}
-	\small
-		\begin{tabular}{|p{0.28\textwidth}|p{0.62\textwidth}|}
-			\hline
-			Égalité de valeur & \small \texttt{assertEquals(<obtenu>, <attendu>);} \\
-			\hline
-			Temps d'exécution & \small \texttt{assertTimeout(ofMinutes(2), () -> \{  //tâche qui prend moins de 2 minutes \});} \\
-			\hline
-			Levée d'une exception & \small \texttt{assertThrows}\\
-			\hline
-			Non nullité & \small \texttt{assertNotNull(variable);}\\
-			\hline
-			Vérification booléenne & \small \texttt{assertTrue(lastName.endsWith("e"));}\\
-			\hline
-		\end{tabular}
+\end{frame}
+
+\begin{frame}{Pourquoi docker ?}
+\begin{block}{Raisons}
+\begin{itemize}
+\item[•] Évité les difficultés lier au déploiement.
+\item[•] Avoir un environnement unifié et fonctionnel (pratique lorsque les projets sont en collaboration).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Qu'est ce que le déploiement 1/2}
+	\begin{block}{Acteurs}
+	Les deux principaux acteurs dans un cycle de déploiement sont:
+	\begin{itemize}
+	\item[•] Les développeurs.
+	\item[•] Les administrateurs système.
+	\end{itemize}
+	\end{block}
+	\begin{block}{Exemple d'équation entre ces deux acteurs}
+	Administrateur système = Garant de la stabilité de la sécurité des systèmes informatique\\
+    Développeurs = Créateurs de nouvelles fonctionnalité et applications
 	\end{block}
 \end{frame}
 
-
-
-
-
-\section{Annotations Junit}
-\begin{frame}{Plus de clarté dans l'exécution}
-	Permet d'afficher des messages lors de l'exécution des tests.
-	\begin{itemize}
-		\item \code{@Tag} regroupe tous les tests d'une classe.
-		\item \code{@nested} regroupe tous les tests d'une classe interne.
-		\item \code{@DisplayName} Affecte un nom à un test ou à un groupe de test.
-	\end{itemize}
-	\begin{center}
-		\includegraphics[width=0.9\textwidth]{images/Tests_annotes}
-	\end{center}
+\begin{frame}{Cycle de déploiement}
+\begin{center}
+\includegraphics[scale=0.12]{images/cycle_de_deploiemnt_4.png}
+\end{center}
 \end{frame}
 
-\begin{frame}{Définir la séquence d'exécution}
-	\begin{itemize}
-		\item \code{@BeforeAll} Partie du code qui sera exécutée une seule fois, avant tout le reste.
-		\item \code{@BeforeEach} Partie du code qui sera exécutée avant chaque test.
-		\item \code{@Test} Indique qu'il s'agit d'un test qui doit être exécuté (pas besoin de main)
-		\item \code{@AfterEach} Partie du code qui sera exécutée après chaque test.
-		\item \code{@AfterAll} Partie du code qui sera exécutée une seule fois, après tout le reste.
-	\end{itemize}
+\begin{frame}{Comprendre la terminologie de Docker ? 1/2}
+Avant de se lancer dans l'utilisation de Docker, il est important de comprendre la terminologie suivante :
+\begin{block}{Quelques termes}
+\begin{itemize}
+\item[•] Image
+\item[•] Conteneur
+\item[•] Dockerfile 
+\end{itemize}
+\end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Complexifier les cas de tests}
-	\begin{exampleblock}{Multiples cas à tester}\scriptsize
-		\begin{lstlisting}
-@DisplayName("Fonction ajouter avec valeurs positives et négatives")
-@ParameterizedTest(name = "{0} + {1} should equal to {2}")
-@CsvSource({ "1,1,-2", "2,-3,-5", "3,-2,-7" })
-public void testAdd(int arg1, int arg2, int expectResult) {
-    // Arrange -- Tout est prêt !
-
-    // Act
-    int actualResult = calculatorUnderTest.add(arg1, arg2);
-
-    // Assert
-    assertEquals(expectResult, actualResult);
-}
-		\end{lstlisting}
-	\end{exampleblock}
+\begin{frame}{Comprendre la terminologie de Docker ? 2/2}
+Avant de se lancer dans l'utilisation de Docker, il est important de comprendre la terminologie suivante :
+\begin{block}{Quelques termes}
+\begin{itemize}
+\item[•] Docker compose
+\item[•] Registry
+\end{itemize}
+\end{block}
 \end{frame}
 
-
-\section{Couverture des tests}
 \begin{frame}
-\begin{block}{Définition}
-Mesure la proportion de code qui a été exécutée lors des Tests.\\
 
-Plusieurs mesures possibles : 
-\begin{itemize}
-\item Nombre de lignes
-\item Nombre d'instructions
-\item Nombre de branches
-\item Nombre de méthodes (déconseillé)
-\end{itemize}
-\end{block}
-
-\begin{block}{Exigence fixée par le contexte}
-\begin{itemize}
-\item Aéronautique : couverture 100\% des instructions
-\item Automobile : couverture 90\%
-\item Domotique : couverture 80\%
-\end{itemize}
-
-\end{block}
-
+\end{frame}
 \end{frame}
 
 
-\begin{frame}{}
 
-\end{frame}
-
-}
 \end{document}
