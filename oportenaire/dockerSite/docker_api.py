@@ -28,12 +28,18 @@ def getImages():
     return result == None
 
 def pullImage(name: str):
+<<<<<<< HEAD
     result = None
     try:
         result = client.images.pull(name)
     except Exception as e:
         raise e
     return result == None
+=======
+    result = client.images.pull(name)
+    return
+
+>>>>>>> f89d73f63d80efc0b6ceaed2eb18fd0f1e505342
         
 def pushImage(image_id):
     result = None
@@ -79,7 +85,7 @@ def runImage(context: dict) -> bool:
         result = client.containers.run(image=context['image'], command=context['commande'][0], detach=context['detach'])
     except Exception as e:
         raise e
-    print(result)
+    #print(result)
     return result == None
 
 def removeContainer(container_id: str) -> bool:
@@ -117,7 +123,7 @@ def findContainerIdByName(containe_alpha):
     try:
         containers = client.containers.list(all=True)
         for container in containers:
-            if formatID(container.id) == containe_alpha:
+            if formatID(container.id) == formatID(containe_alpha):
                 result = container
     except Exception as e:
         raise e
