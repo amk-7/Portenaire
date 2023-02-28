@@ -1,6 +1,13 @@
+<<<<<<< HEAD
+.aux
+.log
+.synctex.gz
+.pdf
+=======
 
 *.aux
 *.log
 *.pdf
 *.synctex.gz
 
+>>>>>>> 5d6e14f5269fca98baa6a1ed44c6fd426acbcfcd
